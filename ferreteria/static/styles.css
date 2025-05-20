@@ -1,0 +1,65 @@
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #f2f2f2;
+  margin: 0;
+  padding: 20px;
+}
+
+.container {
+  max-width: 500px;
+  margin: auto;
+  background-color: #fff;
+  padding: 25px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px #ccc;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+input, select, button {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  margin-bottom: 15px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+button {
+  background-color: #007bff;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  border: none;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+.producto {
+  background: #f9f9f9;
+  padding: 10px;
+  border-radius: 5px;
+  font-size: 0.95em;
+  margin-bottom: 10px;
+}
+
+.totales {
+  background-color: #e7f3ff;
+  padding: 10px;
+  border-radius: 5px;
+  margin-top: 10px;
+}
+
+.notificaciones {
+  background-color: #fffbe6;
+  border: 1px solid #ffe58f;
+  padding: 10px;
+  margin-top: 20px;
+  border-radius: 5px;
+  font-size: 0.9em;
+}

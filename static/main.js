@@ -1,20 +1,27 @@
-let sucursales = []; // Se guarda la lista con precios
+let sucursales = [];
 
 document.addEventListener('DOMContentLoaded', () => {
   cargarSucursales();
+
+  const select = document.getElementById('filtroSelect');
+  if (select) select.addEventListener('change', actualizarPrecio);
+
+  const inputCantidad = document.getElementById('cantidad');
+  if (inputCantidad) inputCantidad.addEventListener('input', calcularTotal);
 });
 
 async function cargarSucursales() {
   try {
     const res = await fetch('/sucursales');
     if (!res.ok) throw new Error('No se pudo cargar las sucursales');
-    const data = await res.json();
 
-    sucursales = data; // Guarda globalmente las sucursales
+    const data = await res.json();
+    sucursales = data;
 
     const select = document.getElementById('filtroSelect');
-    select.innerHTML = '<option value="">-- Selecciona --</option>'; // Limpiar antes de agregar
+    if (!select) return;
 
+    select.innerHTML = '<option value="">-- Selecciona --</option>';
     data.forEach(sucursal => {
       const option = document.createElement('option');
       option.value = sucursal.id;
@@ -33,9 +40,7 @@ async function buscarSucursal() {
   const filtro = inputTexto !== '' ? inputTexto : selectValor;
   let url = '/sucursales';
 
-  if (filtro) {
-    url += '?filtro=' + encodeURIComponent(filtro);
-  }
+  if (filtro) url += '?filtro=' + encodeURIComponent(filtro);
 
   try {
     const res = await fetch(url);
@@ -43,6 +48,8 @@ async function buscarSucursal() {
     const data = await res.json();
 
     const lista = document.getElementById('resultados');
+    if (!lista) return;
+
     lista.innerHTML = '';
 
     if (data.length === 0) {
@@ -86,18 +93,12 @@ async function calcularTotal() {
     try {
       const res = await fetch('/calcular_usd', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ total_clp: total })
       });
 
       const data = await res.json();
-      if (data.total_usd !== undefined) {
-        document.getElementById('totalUSD').textContent = data.total_usd;
-      } else {
-        document.getElementById('totalUSD').textContent = 'Error';
-      }
+      document.getElementById('totalUSD').textContent = data.total_usd ?? 'Error';
     } catch (err) {
       document.getElementById('totalUSD').textContent = 'Error';
     }
@@ -106,4 +107,105 @@ async function calcularTotal() {
     document.getElementById('total').textContent = '0';
     document.getElementById('totalUSD').textContent = '0';
   }
+}
+
+function realizarVenta() {
+    const cantidadInput = document.getElementById("cantidad").value;
+    const sucursal = document.getElementById("selectSucursal").value;
+    const cantidad = parseInt(cantidadInput);
+
+    if (!cantidad || cantidad <= 0) {
+        mostrarToast("⚠️ Cantidad inválida.");
+        return;
+    }
+
+    if (!validarStock()) return;
+
+    fetch("/realizar_venta", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sucursal: sucursal, cantidad: cantidad })
+    })
+    .then(res => res.json())
+    .then(data => {
+        mostrarToast(data.message);
+    })
+    .catch(() => {
+        mostrarToast("❌ Error en la venta");
+    });
+}
+
+function iniciarPago(monto, sucursal, cantidad) {
+    fetch("/iniciar_pago", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ amount: monto, sucursal: sucursal, cantidad: cantidad })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.url && data.token) {
+            const form = document.createElement("form");
+            form.method = "POST";
+            form.action = data.url;
+
+            const input = document.createElement("input");
+            input.type = "hidden";
+            input.name = "token_ws";
+            input.value = data.token;
+
+            form.appendChild(input);
+            document.body.appendChild(form);
+            form.submit();
+        } else {
+            mostrarToast("❌ Error al iniciar el pago.");
+        }
+    })
+    .catch(error => {
+        console.error("Error en el pago:", error);
+        mostrarToast("❌ Hubo un problema al conectar con el servidor.");
+    });
+}
+
+function filtrarSucursales() {
+    const input = document.getElementById("buscadorSucursal").value.toLowerCase();
+    const sucursales = document.querySelectorAll(".sucursal-item");
+
+    sucursales.forEach((item) => {
+        const nombre = item.getAttribute("data-nombre");
+        if (nombre.includes(input)) {
+            item.style.display = "flex";
+        } else {
+            item.style.display = "none";
+        }
+    });
+}
+
+function mostrarToast(mensaje) {
+    const toast = document.getElementById("toastSSE");
+    toast.textContent = mensaje;
+    toast.classList.remove("hidden");
+    toast.style.opacity = "1";
+
+    setTimeout(() => {
+        toast.style.opacity = "0";
+    }, 4000);
+
+    setTimeout(() => {
+        toast.classList.add("hidden");
+    }, 4500);
+}
+function confirmarCompra() {
+    const idSucursal = document.getElementById('filtroSelect').value;
+    const cantidadInput = document.getElementById('cantidad').value;
+    const cantidad = parseInt(cantidadInput);
+    const totalCLP = parseInt(document.getElementById('total').textContent);
+
+    if (!idSucursal || isNaN(cantidad) || cantidad <= 0 || isNaN(totalCLP) || totalCLP <= 0) {
+        mostrarToast("⚠️ Verifica la sucursal, cantidad y total antes de continuar.");
+        return;
+    }
+
+    iniciarPago(totalCLP, idSucursal, cantidad);
 }

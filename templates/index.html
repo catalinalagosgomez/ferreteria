@@ -9,37 +9,40 @@
   <div class="container">
     <h1>Ferretería</h1>
 
+   
     <label for="filtroTexto">Buscar por número de sucursal:</label>
     <input type="text" id="filtroTexto" placeholder="Ej: 1" />
-
-    
-
     <button onclick="buscarSucursal()">Buscar</button>
 
-  
+ 
     <h2>Resultados:</h2>
-
     <ul id="resultados"></ul>
+
+ 
     <div class="selector-container">
-  <label for="filtroSelect">Selecciona una sucursal:</label>
-  <select id="filtroSelect" class="selector">
-    <option value="">-- Selecciona una sucursal --</option>
+      <label for="filtroSelect">Selecciona una sucursal:</label>
+      <select id="filtroSelect" class="selector" onchange="calcularTotal()">
+        <option value="">-- Selecciona una sucursal --</option>
+      </select>
+    </div>
+
+   
+    <div class="cantidad-container">
+      <label for="cantidad">Cantidad:</label>
+      <input type="number" id="cantidad" min="1" placeholder="Ej: 5" oninput="calcularTotal()" />
+    </div>
+
     
-  </select>
-</div>
-<div class="cantidad-container">
-  <label for="cantidad">Cantidad:</label>
-  <input type="number" id="cantidad" min="1" placeholder="Ej: 5" oninput="calcularTotal()" />
-</div>
+    <div class="precio-container">
+      <p><strong>Total en CLP:</strong> $<span id="total">0</span></p>
+      <p><strong>Total en USD:</strong> $<span id="totalUSD">0</span></p>
+    </div>
 
-<div class="precio-container">
- <p><strong>Total en CLP:</strong> $<span id="total">0</span></p>
-<p><strong>Total en USD:</strong> $<span id="totalUSD">0</span></p>
-
-
-
-</div>
     
+    <button onclick="confirmarCompra()">Pagar con Webpay</button>
+
+
+    <div id="mensaje" style="margin-top: 20px; color: green;"></div>
   </div>
 
   <script src="{{ url_for('static', filename='main.js') }}"></script>

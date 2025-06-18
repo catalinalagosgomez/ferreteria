@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify, render_template, session, redirect, url_for
 from flask_cors import CORS
 from extensions import db
-from models import Sucursal
+from models import Sucursal, Sucursal_original, Producto, StockSucursal
 import requests
 import time
 from transbank.webpay.webpay_plus.transaction import Transaction
@@ -22,20 +22,24 @@ def index():
     return render_template('index.html')
 
 @app.route('/sucursales')
-def buscar_sucursal():
-    filtro = request.args.get('filtro')
+def ver_sucursales_con_productos():
+    sucursales = Sucursal_original.query.all()
 
-    if filtro and filtro in ['1', '2', '3']:
-        sucursales_filtradas = Sucursal.query.filter(Sucursal.id == int(filtro)).all()
-    else:
-        sucursales_filtradas = Sucursal.query.all()
-
-    resultado = [{
-        'id': suc.id,
-        'nombre': suc.nombre,
-        'cantidad': suc.cantidad,
-        'precio': suc.precio
-    } for suc in sucursales_filtradas]
+    resultado = []
+    for suc in sucursales:
+        productos = []
+        for stock in suc.stock_productos:
+            productos.append({
+                "producto_id": stock.producto.id,
+                "nombre_producto": stock.producto.nombre,
+                "cantidad": stock.cantidad,
+                "precio": stock.precio
+            })
+        resultado.append({
+            "sucursal_id": suc.id,
+            "nombre_sucursal": suc.nombre,
+            "productos": productos
+        })
 
     return jsonify(resultado)
 

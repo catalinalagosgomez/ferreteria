@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+package productos;
+
+service ProductoService {
+  rpc ListarProductos (ProductoVacio) returns (ListaProductos);
+  rpc EliminarProducto (ProductoId) returns (ResultadoOperacion);
+}
+
+message ProductoVacio {}
+
+message ProductoId {
+  int32 id = 1;
+}
+
+message Producto {
+  int32 id = 1;
+  string nombre = 2;
+  string imagen = 3;
+  double precio = 4;
+  int32 stock = 5;
+  int32 sucursal_id = 6;
+  string nombre_sucursal = 7;
+}
+
+message ListaProductos {
+  repeated Producto productos = 1;
+}
+
+message ResultadoOperacion {
+  bool exito = 1;
+  string mensaje = 2;
+}

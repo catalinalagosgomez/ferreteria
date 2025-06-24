@@ -1,14 +1,33 @@
+:root {
+  --color-fondo: #f4f4f4;
+  --color-blanco: #ffffff;
+  --color-primario: #007bff;
+  --color-primario-hover: #0056b3;
+  --color-texto: #333333;
+  --color-secundario: #555555;
+  --color-borde: #cccccc;
+  --color-producto-seleccionado: #e0f2ff;
+  --color-outline: #3b82f6;
+}
+
+/* Reset base */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
 body {
   font-family: 'Segoe UI', sans-serif;
-  background-color: #f4f4f4;
-  margin: 0;
+  background-color: var(--color-fondo);
   padding: 20px;
+  color: var(--color-texto);
 }
 
 .container {
   max-width: 600px;
   margin: 0 auto;
-  background-color: white;
+  background-color: var(--color-blanco);
   padding: 30px;
   border-radius: 10px;
   box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
@@ -16,7 +35,7 @@ body {
 
 h1 {
   text-align: center;
-  color: #333;
+  margin-bottom: 20px;
 }
 
 .selector-container {
@@ -27,44 +46,118 @@ label {
   display: block;
   font-weight: bold;
   margin-bottom: 8px;
-  color: #555;
+  color: var(--color-secundario);
 }
 
 .selector,
-input[type="text"] {
+input[type="text"],
+input[type="number"],
+select {
   width: 100%;
   padding: 10px;
   border-radius: 6px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--color-borde);
   font-size: 16px;
-  box-sizing: border-box;
+  outline-color: var(--color-outline);
 }
 
 button {
   width: 100%;
   padding: 12px;
   margin-top: 20px;
-  background-color: #007bff;
-  color: white;
+  background-color: var(--color-primario);
+  color: var(--color-blanco);
   border: none;
   border-radius: 6px;
   font-size: 16px;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: background-color 0.3s ease;
 }
 
 button:hover {
-  background-color: #0056b3;
+  background-color: var(--color-primario-hover);
 }
 
+/* Lista de resultados */
 ul#resultados {
   list-style: none;
-  padding-left: 0;
+  padding: 0;
+  margin-top: 15px;
 }
 
 ul#resultados li {
-  background: #e9ecef;
+  background-color: #e9ecef;
   margin-bottom: 10px;
   padding: 12px;
   border-radius: 6px;
+}
+
+/* Tarjetas de productos */
+.productos-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.producto-card {
+  border: 2px solid var(--color-borde);
+  padding: 12px;
+  border-radius: 8px;
+  width: calc(50% - 6px);
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+  text-align: center;
+  background-color: var(--color-blanco);
+}
+
+.producto-card:hover {
+  transform: scale(1.02);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-color: var(--color-borde-hover);
+  background-color: var(--color-fondo-hover);
+  color: var(--color-texto-hover);
+  cursor: pointer;
+}
+
+
+
+.producto-imagen {
+  width: 100px;
+  height: auto;
+  margin-top: 10px;
+  object-fit: contain;
+}
+
+/* Toast personalizado */
+#miToast {
+  visibility: hidden;
+  min-width: 250px;
+  margin: 0 auto;
+  background-color: #333333;
+  color: var(--color-blanco);
+  text-align: center;
+  border-radius: 6px;
+  padding: 16px;
+  position: fixed;
+  z-index: 999;
+  left: 0;
+  right: 0;
+  bottom: 30px;
+  font-size: 16px;
+  transition: visibility 0s, opacity 0.5s ease-in-out;
+  opacity: 0;
+}
+
+#miToast.mostrar {
+  visibility: visible;
+  opacity: 1;
+}
+
+/* Mensaje de éxito */
+#mensaje {
+  text-align: center;
+  font-weight: bold;
+  color: green;
+  margin-top: 20px;
 }

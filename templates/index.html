@@ -1,62 +1,100 @@
 <!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <title>Ferretería - Buscar Sucursales</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-  <style>
-    /* Estilos para el toast */
-    #miToast {
-      position: fixed;
-      bottom: 20px;
-      left: 20px;
-      background-color: #333;
-      color: white;
-      padding: 12px 20px;
-      border-radius: 6px;
-      display: none;
-      z-index: 1000;
-    }
-    #miToast.mostrar {
-      display: block;
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <h1>Ferretería</h1>
+<html lang="es" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Ferretería - Buscar Sucursales</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 
-    <div class="selector-container">
-      <label for="sucursalSelect">Selecciona una sucursal:</label>
-      <select id="sucursalSelect" class="selector" onchange="cargarProductos()">
-        <option value="">-- Selecciona una sucursal --</option>
-      </select>
+     <script src="{{ url_for('static', filename='main.js') }}"></script>
+  </head>
+  <body class="bg-gray-50 min-h-screen flex flex-col items-center p-6">
+    <div class="container max-w-5xl w-full bg-white rounded-lg shadow p-6">
+      <h1 class="text-3xl font-bold mb-6 text-center text-gray-800">
+        Ferretería
+      </h1>
+      <!-- Filtros: Sucursal + Buscador -->
+      <div
+        class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6"
+      >
+        <div class="flex flex-col">
+          <label for="sucursalSelect" class="mb-2 font-semibold text-gray-700"
+            >Selecciona una sucursal:</label
+          >
+          <select
+            id="sucursalSelect"
+            class="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            onchange="cargarProductos()"
+          >
+            <option value="">-- Selecciona una sucursal --</option>
+            <!-- Opciones dinámicas -->
+          </select>
+        </div>
+
+        <div class="buscador-container">
+          <label for="buscadorProductos">Buscar producto:</label>
+          <input
+            type="text"
+            id="buscadorProductos"
+            placeholder="Ej: martillo"
+            oninput="filtrarProductos()"
+            class="input-buscador"
+          />
+        </div>
+      </div>
+
+      <!-- Productos -->
+      <div
+        id="productosContainer"
+        class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
+      >
+        <!-- Aquí se cargan los productos -->
+      </div>
+
+      <!-- Cantidad y Totales -->
+      <div class="mt-8 flex flex-col sm:flex-row sm:items-center sm:gap-6">
+        <div class="flex flex-col w-full sm:w-auto">
+          <label for="cantidad" class="font-semibold text-gray-700 mb-2"
+            >Cantidad:</label
+          >
+          <input
+            type="number"
+            id="cantidad"
+            min="1"
+            placeholder="Ej: 1"
+            class="border border-gray-300 rounded px-3 py-2 w-full sm:w-24 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            oninput="mostrarPrecioYTotal()"
+          />
+        </div>
+
+        <div class="mt-4 sm:mt-0 flex flex-col gap-1 text-gray-700">
+          <p>Precio Unitario: $<span id="precioUnitario">0</span></p>
+          <p>Total CLP: $<span id="total">0</span></p>
+          <p>Total USD: $<span id="totalUSD">0</span></p>
+        </div>
+      </div>
+
+      <!-- Botón Pagar -->
+      <div class="mt-6">
+        <button
+          onclick="confirmarCompra()"
+          class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-8 rounded shadow transition"
+        >
+          Pagar con Webpay
+        </button>
+      </div>
+
+      <!-- Mensajes -->
+      <div id="mensaje" class="mt-6 text-green-600 font-semibold"></div>
+
+      <!-- Toast para mostrar mensajes -->
+      <div
+        id="miToast"
+        class="fixed bottom-5 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-6 py-3 rounded shadow-lg opacity-0 transition-opacity duration-300"
+      >
+        <span id="toastMensaje"></span>
+      </div>
     </div>
 
-    <div class="selector-container">
-      <label for="productoSelect">Selecciona un producto:</label>
-      <select id="productoSelect" class="selector" onchange="mostrarPrecioYTotal()">
-        <option value="">-- Selecciona un producto --</option>
-      </select>
-    </div>
-
-    <div class="cantidad-container">
-      <label for="cantidad">Cantidad:</label>
-      <input type="number" id="cantidad" min="1" placeholder="Ej: 1" oninput="mostrarPrecioYTotal()" />
-    </div>
-
-    <p>Precio Unitario: $<span id="precioUnitario">0</span></p>
-    <p>Total CLP: $<span id="total">0</span></p>
-    <p>Total USD: <span id="totalUSD">0</span></p>
-
-    <button onclick="confirmarCompra()">Pagar con Webpay</button>
-
-    <div id="mensaje" style="margin-top: 20px; color: green;"></div>
-
-    <!-- Toast para mostrar mensajes -->
-    <div id="miToast"><span id="toastMensaje"></span></div>
-  </div>
-
-  <script src="{{ url_for('static', filename='main.js') }}"></script>
-</body>
+   
+  </body>
 </html>

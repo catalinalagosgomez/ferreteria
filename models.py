@@ -19,6 +19,7 @@ class Sucursal_original(db.Model):
 class Producto(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(100), nullable=False)
+    imagen = db.Column(db.String(255))
     stock_sucursales = db.relationship('StockSucursal', back_populates='producto', cascade='all, delete-orphan')
     
 # Aqui se define la relacion entre Sucursal y Producto a traves de StockSucursal

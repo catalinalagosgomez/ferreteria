@@ -83,6 +83,8 @@ def iniciar_pago():
         return jsonify({"url": response['url'], "token": response['token']})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
+# ------------------- Retorno de pago -------------------
 
 @app.route("/retorno_pago", methods=["GET", "POST"])
 def retorno_pago():
@@ -114,6 +116,7 @@ def retorno_pago():
 
 # ------------------- obtener productos gRPC -------------------
 def obtener_productos_grpc():
+    # Conexión a el servicio de productos
     with grpc.insecure_channel('localhost:50051') as channel:
         stub = productos_pb2_grpc.ProductoServiceStub(channel)
         respuesta = stub.ListarProductos(productos_pb2.ProductoVacio())
@@ -131,6 +134,7 @@ def obtener_productos_grpc():
                 
             })
         return productos
+    
 #-------------------- stock verificacion -------------------
 
 def check_stock_bajo():
@@ -153,6 +157,8 @@ def check_stock_bajo():
 
         time.sleep(10)
         
+# ------------------- api de stock bajo -------------------
+        
 @app.route('/stream_stock')
 def stream_stock():
     response = Response(stream_with_context(check_stock_bajo()), mimetype='text/event-stream')
@@ -165,9 +171,13 @@ def stream_stock():
 def form_crear_producto():
     return render_template('crear_producto.html')
 
+# ------------------- Eliminar productos -------------------
+
 @app.route('/eliminar_productos', methods=['GET'])
 def form_eliminar_productos():
     return render_template('eliminar_productos.html')
+
+# ------------------- Obtener productos -------------------
                 
 @app.route('/productos', methods=['GET'])
 def obtener_productos():
@@ -177,6 +187,8 @@ def obtener_productos():
     except Exception as e:
         return jsonify({"error": "No se pudo obtener productos desde el microservicio", "detalle": str(e)}), 500
 
+
+# ------------------- Crear Producto -------------------
 
 @app.route('/crear_producto', methods=['POST'])
 def crear_producto():

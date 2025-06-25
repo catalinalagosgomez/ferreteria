@@ -11,6 +11,8 @@ from extensions import db
 from models import Sucursal, Sucursal_original, Producto, StockSucursal
 from transbank.webpay.webpay_plus.transaction import Transaction
 
+from sqlalchemy.orm import close_all_sessions
+
 app = Flask(__name__)
 CORS(app)
 
@@ -132,30 +134,31 @@ def obtener_productos_grpc():
 #-------------------- stock verificacion -------------------
 
 def check_stock_bajo():
-    """Función generadora para SSE que revisa stock bajo periódicamente"""
     while True:
         bajos = []
-        # Buscar stocks con cantidad < 10
-        stocks_bajos = StockSucursal.query.filter(StockSucursal.cantidad < 10).all()
+        try:
+            stocks_bajos = StockSucursal.query.filter(StockSucursal.cantidad < 10).all()
+            for stock in stocks_bajos:
+                bajos.append({
+                    "sucursal": stock.sucursal.nombre,
+                    "producto": stock.producto.nombre,
+                    "stock": stock.cantidad
+                })
+        finally:
+            db.session.remove()  # Limpia sesión para evitar fugas
 
-        for stock in stocks_bajos:
-            bajos.append({
-                "sucursal": stock.sucursal.nombre,
-                "producto": stock.producto.nombre,
-                "stock": stock.cantidad
-            })
-
-        # Enviar evento SSE si hay algún producto con stock bajo
         if bajos:
             data = json.dumps(bajos)
             yield f"event: stock_bajo\ndata: {data}\n\n"
 
-        time.sleep(10)  # Revisar cada 10 segundos (ajusta según necesidad)
-
+        time.sleep(10)
+        
 @app.route('/stream_stock')
 def stream_stock():
-    return Response(stream_with_context(check_stock_bajo()), mimetype='text/event-stream')
-
+    response = Response(stream_with_context(check_stock_bajo()), mimetype='text/event-stream')
+    response.headers["Cache-Control"] = "no-cache"
+    response.headers["X-Accel-Buffering"] = "no"  # Para nginx y otros
+    return response
 
 # ------------------- Admin -------------------
 @app.route('/crear_productos', methods=['GET'])
@@ -240,6 +243,28 @@ def eliminar_producto(producto_id):
     except Exception as e:
         db.session.rollback()
         return jsonify({"error": "Error al eliminar el producto", "detalle": str(e)}), 500
+    
+    
+#-------------------- Endpoints de productos por sucursal -------------------
+
+@app.route('/productos_sucursal/<int:sucursal_id>')
+def productos_por_sucursal(sucursal_id):
+    sucursal = Sucursal_original.query.get_or_404(sucursal_id)
+    productos = []
+    for stock in sucursal.stock_productos:
+        productos.append({
+            "producto_id": stock.producto.id,
+            "nombre_producto": stock.producto.nombre,
+            "cantidad": stock.cantidad,
+            "precio": stock.precio,
+            "imagen": stock.producto.imagen,
+            "stock": stock.cantidad
+        })
+    return jsonify({
+        "sucursal_id": sucursal.id,
+        "nombre_sucursal": sucursal.nombre,
+        "productos": productos
+    })
 
 if __name__ == '__main__':
     app.run(debug=True,threaded=True)

@@ -8,6 +8,18 @@
      <script src="{{ url_for('static', filename='main.js') }}"></script>
   </head>
   <body class="bg-gray-50 min-h-screen flex flex-col items-center p-6">
+     <!-- Toast personalizado con Tailwind -->
+      <div
+        id="miToast"
+        class="fixed bottom-5 right-5 z-50 flex items-center gap-4 max-w-xs px-5 py-4 rounded-2xl shadow-lg bg-gradient-to-r from-blue-600 to-indigo-600 text-white transform translate-y-full opacity-0 transition-all duration-500 ease-out"
+        role="alert"
+      >
+        <svg class="w-6 h-6 text-white shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <span id="toastMensaje" class="text-sm font-medium"></span>
+      </div>
+
     <div class="container max-w-5xl w-full bg-white rounded-lg shadow p-6">
       <h1 class="text-3xl font-bold mb-6 text-center text-gray-800">
         Ferretería
@@ -62,7 +74,7 @@
             min="1"
             placeholder="Ej: 1"
             class="border border-gray-300 rounded px-3 py-2 w-full sm:w-24 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            oninput="mostrarPrecioYTotal()"
+            oninput="calcularTotal()"
           />
         </div>
 
@@ -86,15 +98,7 @@
       <!-- Mensajes -->
       <div id="mensaje" class="mt-6 text-green-600 font-semibold"></div>
 
-      <!-- Toast para mostrar mensajes -->
-      <div
-        id="miToast"
-        class="fixed bottom-5 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-6 py-3 rounded shadow-lg opacity-0 transition-opacity duration-300"
-      >
-        <span id="toastMensaje"></span>
-      </div>
+     
     </div>
-
-   
   </body>
 </html>

@@ -129,35 +129,6 @@ ul#resultados li {
   object-fit: contain;
 }
 
-/* Toast personalizado */
-#miToast {
-  visibility: hidden;
-  min-width: 250px;
-  margin: 0 auto;
-  background-color: #333333;
-  color: var(--color-blanco);
-  text-align: center;
-  border-radius: 6px;
-  padding: 16px;
-  position: fixed;
-  z-index: 999;
-  left: 0;
-  right: 0;
-  bottom: 30px;
-  font-size: 16px;
-  transition: visibility 0s, opacity 0.5s ease-in-out;
-  opacity: 0;
-}
 
-#miToast.mostrar {
-  visibility: visible;
-  opacity: 1;
-}
 
-/* Mensaje de éxito */
-#mensaje {
-  text-align: center;
-  font-weight: bold;
-  color: green;
-  margin-top: 20px;
-}
+

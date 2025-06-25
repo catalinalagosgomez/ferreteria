@@ -6,9 +6,35 @@ document.addEventListener("DOMContentLoaded", () => {
   cargarSucursales();
 
   document.getElementById("sucursalSelect").addEventListener("change", cargarProductosPorSucursal);
-  document.getElementById("cantidad").addEventListener("input", calcularTotal);
   document.getElementById("buscadorProductos").addEventListener("input", filtrarProductos);
+
+// validacion de cantidad
+  document.getElementById("cantidad").addEventListener("input", () => {
+    const cantidadInput = document.getElementById("cantidad");
+    let cantidad = parseInt(cantidadInput.value);
+    
+    if (!productoSeleccionado) {
+      cantidadInput.value = 0;
+      return;
+    }
+
+    if (isNaN(cantidad) || cantidad < 1) {
+      cantidadInput.value = 1;
+      cantidad = 1;
+    }
+
+    if (cantidad > productoSeleccionado.stock) {
+      mostrarToast(`La cantidad máxima disponible es ${productoSeleccionado.stock}`);
+      cantidadInput.value = productoSeleccionado.stock;
+      cantidad = productoSeleccionado.stock;
+    }
+
+    calcularTotal();
+  });
+
+
 });
+
 
 if (!!window.EventSource) {
   const source = new EventSource('/stream_stock');
@@ -18,7 +44,7 @@ if (!!window.EventSource) {
 
     let mensaje = '⚠️ Stock bajo:\n';
     datos.forEach(item => {
-      mensaje += `Producto "${item.producto}" en sucursal "${item.sucursal}": ${item.stock} unidades restantes\n`;
+      mensaje += `<li>Producto "<strong>${item.producto}</strong>" en sucursal "<em>${item.sucursal}</em>": ${item.stock} unidades</li>`;
     });
 
     if (mensaje !== ultimoMensajeToast) {
@@ -123,7 +149,8 @@ function crearCardProducto(producto, nombreSucursal) {
   card.dataset.productoId = producto.producto_id;
   card.dataset.precio = producto.precio;
   card.dataset.imagen = producto.imagen;
-  card.dataset.nombre = producto.nombre_producto;
+  card.dataset.nombre = (producto.nombre || "").toLowerCase();
+  card.dataset.sucursal = (producto.nombre_sucursal || "").toLowerCase();
 
   card.innerHTML = `
     <strong>${producto.nombre}</strong><br />
@@ -149,6 +176,7 @@ function seleccionarProducto(producto, card) {
   document.getElementById("precioUnitario").textContent = producto.precio;
   calcularTotal();
 }
+
 async function calcularTotal() {
   const precio = parseInt(document.getElementById("precioUnitario").textContent);
   const cantidad = parseInt(document.getElementById("cantidad").value);
@@ -199,10 +227,23 @@ function confirmarCompra() {
   const totalText = document.getElementById("total").textContent.replace(/\$/g, "").replace(/\./g, "").trim();
   const totalCLP = parseInt(totalText);
 
-  if (!sucursalId || !productoId || isNaN(cantidad) || cantidad <= 0 || isNaN(totalCLP)) {
-    mostrarToast("⚠️ Completa todos los campos correctamente.");
+  console.log("Datos de compra:", totalCLP, sucursalId, cantidad, productoId);
+  if (!productoSeleccionado) {
+    mostrarToast(" Debes seleccionar un producto.");
     return;
   }
+
+  if (cantidad < 1) {
+    mostrarToast(" La cantidad debe ser al menos 1.");
+    return;
+  }
+
+  if (cantidad > productoSeleccionado.stock) {
+    mostrarToast(` No hay stock suficiente. Solo quedan ${productoSeleccionado.stock} unidades.`);
+    return;
+  }
+
+  
 
   iniciarPago(totalCLP, sucursalId, cantidad);
 }
@@ -247,10 +288,13 @@ function mostrarToast(mensaje) {
   const toastMensaje = document.getElementById("toastMensaje");
 
   if (toast && toastMensaje) {
-    toastMensaje.textContent = mensaje;
+    toastMensaje.innerHTML = mensaje.replace(/\n/g, "<br>"); 
+
     toast.classList.add("mostrar");
+    toast.classList.remove("translate-y-full", "opacity-0");
 
     setTimeout(() => {
+      toast.classList.add("translate-y-full", "opacity-0");
       toast.classList.remove("mostrar");
     }, 3000);
   } else {
@@ -263,7 +307,10 @@ function filtrarProductos() {
   const cards = document.querySelectorAll(".producto-card");
 
   cards.forEach((card) => {
-    const nombre = card.dataset.nombre;
-    card.style.display = nombre.includes(filtro) ? "block" : "none";
+    const nombre = card.dataset.nombre || "";
+    const sucursal = card.dataset.sucursal || "";
+
+    const coincide = nombre.includes(filtro) || sucursal.includes(filtro);
+    card.style.display = coincide ? "block" : "none";
   });
 }

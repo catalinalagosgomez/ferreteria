@@ -36,6 +36,8 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 
+// Función para mostrar un toast de stock bajo en SSE 
+
 if (!!window.EventSource) {
   const source = new EventSource('/stream_stock');
 
@@ -60,6 +62,9 @@ if (!!window.EventSource) {
 } else {
   alert('Tu navegador no soporta Server-Sent Events.');
 }
+
+// Función para cargar sucursales
+
 async function cargarSucursales() {
   try {
     const res = await fetch("/sucursales");
@@ -84,6 +89,8 @@ async function cargarSucursales() {
     alert("Error al cargar sucursales: " + err.message);
   }
 }
+
+// Función para cargar todos los productos
 
 async function mostrarTodosLosProductos() {
   const container = document.getElementById("productosContainer");
@@ -118,6 +125,9 @@ async function mostrarTodosLosProductos() {
     mostrarToast("❌ Error al cargar productos: " + error.message);
   }
 }
+
+// Función para cargar productos por sucursal
+
 function cargarProductosPorSucursal() {
   const idSucursal = document.getElementById("sucursalSelect").value;
   const sucursal = sucursales.find((s) => s.sucursal_id == idSucursal);
@@ -142,6 +152,8 @@ function cargarProductosPorSucursal() {
 
   filtrarProductos(); // Aplica filtro
 }
+
+// Función para crear una tarjeta de producto
 
 function crearCardProducto(producto, nombreSucursal) {
   const card = document.createElement("div");
@@ -176,6 +188,8 @@ function seleccionarProducto(producto, card) {
   document.getElementById("precioUnitario").textContent = producto.precio;
   calcularTotal();
 }
+
+// Función para calcular el total
 
 async function calcularTotal() {
   const precio = parseInt(document.getElementById("precioUnitario").textContent);
@@ -219,6 +233,8 @@ async function calcularTotal() {
   }
 }
 
+// Función para confirmar la compra
+
 function confirmarCompra() {
   const sucursalId = document.getElementById("sucursalSelect").value;
   const cantidad = parseInt(document.getElementById("cantidad").value);
@@ -247,6 +263,8 @@ function confirmarCompra() {
 
   iniciarPago(totalCLP, sucursalId, cantidad);
 }
+
+// Función para iniciar el pago
 
 function iniciarPago(monto, sucursal, cantidad) {
   fetch("/iniciar_pago", {
@@ -283,6 +301,8 @@ function iniciarPago(monto, sucursal, cantidad) {
     });
 }
 
+// Función para mostrar un toast
+
 function mostrarToast(mensaje) {
   const toast = document.getElementById("miToast");
   const toastMensaje = document.getElementById("toastMensaje");
@@ -301,6 +321,8 @@ function mostrarToast(mensaje) {
     alert(mensaje);
   }
 }
+
+// Función para filtrar productos en la lista de productos
 
 function filtrarProductos() {
   const filtro = document.getElementById("buscadorProductos").value.toLowerCase();

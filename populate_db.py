@@ -23,9 +23,9 @@ with app.app_context():
 
     # Lista de productos con imágenes
     productos_info = [
-        ("Martillo", "https://seogenial.com/wp-content/uploads/2020/05/las-mejores-tiendas-online-para-vender-tus-productos-en-peru.png"),
-        ("Sierra", "https://seogenial.com/wp-content/uploads/2020/05/las-mejores-tiendas-online-para-vender-tus-productos-en-peru.png"),
-        ("Clavos", "https://seogenial.com/wp-content/uploads/2020/05/las-mejores-tiendas-online-para-vender-tus-productos-en-peru.png"),
+        ("Martillo", "https://cdnx.jumpseller.com/almasolar-cl/image/42443491/resize/640/640?1700600375"),
+        ("Sierra", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQX0ikPdbq21S-jjnrPPHUcBhTC35YmLUzbbQ&s"),
+        ("Clavos", "https://ferrobal.cl/wp-content/uploads/2023/10/clavo-4-1kg.png"),
         ("Destornillador", "https://seogenial.com/wp-content/uploads/2020/05/las-mejores-tiendas-online-para-vender-tus-productos-en-peru.png"),
         ("Alicate", "https://seogenial.com/wp-content/uploads/2020/05/las-mejores-tiendas-online-para-vender-tus-productos-en-peru.png"),
         ("Taladro", "https://seogenial.com/wp-content/uploads/2020/05/las-mejores-tiendas-online-para-vender-tus-productos-en-peru.png"),
